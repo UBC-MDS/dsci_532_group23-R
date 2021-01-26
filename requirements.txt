@@ -1,0 +1,11 @@
+pandas
+gunicorn
+altair
+dash==1.18.1
+dash_bootstrap_components
+plotly
+seaborn
+nbformat
+psutil
+requests
+ipykernel
