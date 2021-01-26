@@ -1,7 +1,7 @@
 # World Energy Consumption Dashboard
 - author: DSCI 532 group 23
 
-Link to Dashboard: https://world-energy-group23.herokuapp.com/
+Link to Dashboard: 
 
 This is a group project of designing a dashboard for world energy consumption. 
 
