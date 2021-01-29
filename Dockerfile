@@ -7,6 +7,7 @@ COPY . /app/
 RUN if [ -f '/app/onbuild' ]; then bash /app/onbuild; fi; 
 
 # look for /app/apt-packages and if it exists, install the packages contained
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9
 RUN if [ -f '/app/apt-packages' ]; then apt-get update -q && cat apt-packages | xargs apt-get -qy install && rm -rf /var/lib/apt/lists/*; fi;              
 
 # look for /app/init.R and if it exists, execute it
