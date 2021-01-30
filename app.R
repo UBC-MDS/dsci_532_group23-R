@@ -46,46 +46,63 @@ names(energy_world_df)[6] <- "population"
 app$layout(dbcContainer(list(
   dbcRow(list(
     dbcCol(list(
-  dccGraph(id = 'map_plot'),
-  htmlBr(),
-  dccSlider(
-    id = 'select_col',
-    min = 1980,
-    max = 2018,
-    marks = list(
-      "1980" = "1980",
-      "1982" = "1982",
-      "1984" = "1984",
-      "1986" = "1986",
-      "1988" = "1988",
-      "1990" = "1990",
-      "1992" = "1992",
-      "1994" = "1994",
-      "1996" = "1996",
-      "1998" = "1998",
-      "2000" = "2000",
-      "2002" = "2002",
-      "2004" = "2004",
-      "2006" = "2006",
-      "2008" = "2008",
-      "2010" = "2010",
-      "2012" = "2012",
-      "2014" = "2014",
-      "2016" = "2016",
-      "2018" = "2018"
-    ),
-    value = 1980
-  ))))),
+      dccGraph(id = 'map_plot'),
+      htmlBr(),
+      dccSlider(
+        id = 'select_col',
+        min = 1980,
+        max = 2018,
+        marks = list(
+          "1980" = "1980",
+          "1982" = "1982",
+          "1984" = "1984",
+          "1986" = "1986",
+          "1988" = "1988",
+          "1990" = "1990",
+          "1992" = "1992",
+          "1994" = "1994",
+          "1996" = "1996",
+          "1998" = "1998",
+          "2000" = "2000",
+          "2002" = "2002",
+          "2004" = "2004",
+          "2006" = "2006",
+          "2008" = "2008",
+          "2010" = "2010",
+          "2012" = "2012",
+          "2014" = "2014",
+          "2016" = "2016",
+          "2018" = "2018"
+        ),
+        value = 1980
+      )
+      ), width = 7),
+    dbcCol(list(
+      dbcRow(list(
+      dbcCol(
+      dccGraph(id = 'barplot')),
+      dbcCol(
+      dccDropdown(
+        id = 'type-select',
+        options = purrr::map(t(energy_data %>% select(energy_type) %>% unique()), function(col)
+          list(label = col, value = col)),
+        value = 'natural_gas')
+      )))), width = 5
+      
+    )
+    
+    )),
+  
   dbcRow(list(
     dbcCol(
-  dccGraph(id = 'plot-area')),
-  dbcCol(
-  dccDropdown(
-    id = 'col-select',
-    options = purrr::map(t(energy_data %>% select(country_code) %>% unique()), function(col)
-      list(label = col, value = col)),
-      value = 'AFG'), width = 2
-)), style = list(minWidth = '250px', borderRadius = 0))
+      dccGraph(id = 'plot-area')),
+    dbcCol(
+      dccDropdown(
+        id = 'col-select',
+        options = purrr::map(t(energy_data %>% select(country_code) %>% unique()), function(col)
+          list(label = col, value = col)),
+        value = 'AFG'), width = 2
+    )), style = list(minWidth = '250px', borderRadius = 0))
 )))
 
 
@@ -104,11 +121,34 @@ app$callback(output('map_plot', 'figure'),
                  height = 6,
                  colors = c("#FFFFD4", "#FED98E", "#FE9929", "#D95F0E", "#993404"),
                  text = ~ country_name
-               )
+               ) %>% layout(title = paste('World Energy Consumption (', time_col,")"))
                p 
              })
 
 
+
+
+app$callback(output('barplot', 'figure'),
+             list(input('type-select', 'value'),
+                  input('select_col', 'value')),
+             function(type_col, time_col) {
+               p <-  energy_world_df %>% 
+                 filter(year == time_col) %>% 
+                 group_by(energy_type, country_name) %>%
+                 summarise(energy_consumption = sum(energy, na.rm = TRUE)) %>%
+                 arrange(desc(energy_consumption)) %>%
+                 filter(energy_type == type_col) %>% slice_max(energy_consumption, n = 10) %>%
+                 ggplot() +
+                   aes(y = reorder(country_name, energy_consumption), x = energy_consumption, fill = country_name) +
+                 geom_bar(stat = "identity", show.legend = FALSE) +
+                 labs(x = "Energy (Top 10)", y = " ") +
+                 theme(axis.text = element_text(size = 8),
+                       axis.title = element_text(size = 10),
+                       legend.position = 'none')
+               
+               ggplotly(p) %>% layout(dragmode = 'select')
+             })
+ 
 
 app$callback(output('plot-area', 'figure'),
              list(input('col-select', 'value')),
