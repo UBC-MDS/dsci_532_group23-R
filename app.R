@@ -76,7 +76,7 @@ app$layout(dbcContainer(list(
         ),
         value = 1980
       )
-      ), width = 7),
+      ), width = 8),
     
     dbcCol(list(
       dccGraph(id = 'barplot'),
@@ -85,7 +85,7 @@ app$layout(dbcContainer(list(
         options = purrr::map(t(energy_data %>% select(energy_type) %>% unique()), function(col)
           list(label = col, value = col)),
         value = 'natural_gas')
-      ), width = 5
+      ), width = 4
       
     )
     
