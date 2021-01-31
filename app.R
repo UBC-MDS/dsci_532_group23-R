@@ -18,8 +18,8 @@ country_df <- read_csv("data/country_conv.csv")
 population_df <- read_csv("data/world_population.csv")
 names(population_df) <- sub(" ", "_", names(population_df))
 energy_data <- read_csv("data/world_energy.csv")
-energy_data <-
-  energy_data %>% filter(energy_type != "all_renewable")
+#energy_data <-
+#  energy_data %>% filter(energy_type != "all_renewable")
 energy <- left_join(energy_data, country_df, by = "country_code")
 energy <-
   left_join(
@@ -80,9 +80,9 @@ app$layout(dbcContainer(list(
       dccGraph(id = 'barplot'),
       dccDropdown(
         id = 'type-select',
-        options = purrr::map(t(energy_data %>% select(energy_type) %>% unique()), function(col)
+        options = purrr::map(t(energy_world_df %>% select(energy_type) %>% filter(energy_type != " ") %>% unique()), function(col)
           list(label = col, value = col)),
-        value = 'natural_gas')
+        value = 'total')
       ), width = 4
       
     )
@@ -94,9 +94,9 @@ app$layout(dbcContainer(list(
     dbcCol(
       dccDropdown(
         id = 'col-select',
-        options = purrr::map(t(energy_data %>% select(country_code) %>% unique()), function(col)
+        options = purrr::map(t(energy_world_df %>% select(country_name) %>% unique()), function(col)
           list(label = col, value = col)),
-        value = 'AFG'), width = 2
+        value = 'Canada'), width = 2
     ),
     
     dbcCol(
@@ -110,9 +110,11 @@ app$layout(dbcContainer(list(
 
 
 app$callback(output('map_plot', 'figure'),
-             list(input('select_col', 'value')),
-             function(time_col) {
-               p <- energy_world_df %>% filter(year == time_col)
+             list(input('type-select', 'value'),
+                  input('select_col', 'value')),
+             function(type_col,time_col) {
+               p <- energy_world_df %>% filter(year == time_col,
+                                               energy_type == type_col)
                p <- plot_ly(
                  p,
                  type = 'choropleth',
@@ -153,7 +155,9 @@ app$callback(output('barplot', 'figure'),
 app$callback(output('plot-area', 'figure'),
              list(input('col-select', 'value')),
              function(xcol) {
-               p <- energy_data %>% filter(country_code == xcol) %>%
+               p <- energy_world_df %>% filter(energy_type != "total" &
+                                             energy_type != "all_renewable" &
+                                             country_name == xcol) %>%
                  ggplot() +
                  aes(
                    x = year,
@@ -164,8 +168,11 @@ app$callback(output('plot-area', 'figure'),
                  geom_line() +
                  ggthemes::scale_color_tableau() +
                  labs(x = "Year", y = "Energy Consumption (Quad BTU)") +
+                 ggtitle(paste("Energy Consumption  (", xcol, ")"))+
                  theme(axis.text = element_text(size = 9),
-                       axis.title = element_text(size = 11))
+                       axis.title = element_text(size = 11),
+                       legend.title = element_blank(),
+                       plot.title = element_text(hjust = 0.5))
                
                ggplotly(p) %>% layout(dragmode = 'select')
              })
