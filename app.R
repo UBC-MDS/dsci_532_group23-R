@@ -171,4 +171,4 @@ app$callback(output('plot-area', 'figure'),
              })
 
 
-app$run_server(host = '0.0.0.0', debug = F)
+app$run_server(host = '0.0.0.0', debug = T)
