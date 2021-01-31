@@ -19,8 +19,7 @@ population_df <- read_csv("data/world_population.csv")
 names(population_df) <- sub(" ", "_", names(population_df))
 energy_data <- read_csv("data/world_energy.csv")
 energy_data <-
-  energy_data %>% filter(energy_type != "total" &
-                           energy_type != "all_renewable")
+  energy_data %>% filter(energy_type != "all_renewable")
 energy_data <- energy_data %>% filter(country_code != "WORL")
 energy <- left_join(energy_data, country_df, by = "country_code")
 energy <-
