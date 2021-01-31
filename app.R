@@ -79,31 +79,32 @@ app$layout(dbcContainer(list(
       ), width = 7),
     
     dbcCol(list(
-      dbcRow(list(
-      dbcCol(
-      dccGraph(id = 'barplot')),
-      dbcCol(
+      dccGraph(id = 'barplot'),
       dccDropdown(
         id = 'type-select',
         options = purrr::map(t(energy_data %>% select(energy_type) %>% unique()), function(col)
           list(label = col, value = col)),
         value = 'natural_gas')
-      )))), width = 5
+      ), width = 5
       
     )
     
     )),
   
   dbcRow(list(
-    dbcCol(
-      dccGraph(id = 'plot-area')),
+    
     dbcCol(
       dccDropdown(
         id = 'col-select',
         options = purrr::map(t(energy_data %>% select(country_code) %>% unique()), function(col)
           list(label = col, value = col)),
         value = 'AFG'), width = 2
-    )), style = list(minWidth = '250px', borderRadius = 0))
+    ),
+    
+    dbcCol(
+      dccGraph(id = 'plot-area'))
+    
+    ), style = list(borderRadius = 0))
 )))
 
 
@@ -165,8 +166,8 @@ app$callback(output('plot-area', 'figure'),
                  geom_line() +
                  ggthemes::scale_color_tableau() +
                  labs(x = "Year", y = "Energy Consumption (Quad BTU)") +
-                 theme(axis.text = element_text(size = 12),
-                       axis.title = element_text(size = 15))
+                 theme(axis.text = element_text(size = 9),
+                       axis.title = element_text(size = 11))
                
                ggplotly(p) %>% layout(dragmode = 'select')
              })
