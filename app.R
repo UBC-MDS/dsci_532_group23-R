@@ -140,8 +140,8 @@ app$callback(output('barplot', 'figure'),
                  arrange(desc(energy_consumption)) %>%
                  filter(energy_type == type_col) %>% slice_max(energy_consumption, n = 10) %>%
                  ggplot() +
-                   aes(y = reorder(country_name, energy_consumption), x = energy_consumption, fill = country_name) +
-                 geom_bar(stat = "identity", show.legend = FALSE) +
+                   aes(x = energy_consumption, y = reorder(country_name, energy_consumption), fill = country_name) +
+                 geom_col( show.legend = FALSE) +
                  labs(x = "Energy (Top 10)", y = " ") +
                  theme(axis.text = element_text(size = 8),
                        axis.title = element_text(size = 10),
