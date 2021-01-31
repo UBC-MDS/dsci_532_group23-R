@@ -77,6 +77,7 @@ app$layout(dbcContainer(list(
         value = 1980
       )
       ), width = 7),
+    
     dbcCol(list(
       dbcRow(list(
       dbcCol(
@@ -171,4 +172,4 @@ app$callback(output('plot-area', 'figure'),
              })
 
 
-app$run_server(host = '0.0.0.0', debug = T)
+app$run_server(host = '0.0.0.0', debug = F)
